@@ -1,7 +1,10 @@
 # Changelog
 
-## Unreleased
+## v1.8.0
 
+- **New: DOF adapter in Camera Assistant** (`dofadapter`, in Camera). Adds `SUPPORT_CAMERA_ASSISTANT_DOF_ADAPTER` to `camera-feature.xml`, which brings up Camera Assistant's DOF (depth-of-field) adapter option for manual-focus adapters. Rebuilt from stock at every apply; a reboot restores stock.
+- **New: 8K recording while mirroring** (`mirror8k`, in Camera). Adds `SUPPORT_CAMERA_ASSISTANT_RECORDING_8K_WHEN_MIRRORING`, so the phone records 8K while mirrored to a display over HDMI or Smart View, with the matching Camera Assistant option. Rebuilt from stock at every apply; a reboot restores stock.
+- **New: longer recording limits** (`longrec`, in Camera). Sets `MAX_SEAMLESS_ZOOM_RECORDING_TIME_LIMIT_IN_OVERHEAT_CONDITION` and `MIN_RECORDING_TIME_TO_ENABLE_LOW_POWER_MODE` to 3600 seconds (1 hour; stock is 300 seconds, 5 minutes), modifying the entries or inserting them when the stock file lacks them. Rebuilt from stock at every apply; a reboot restores stock.
 - **Fix: 24 fps Video showed only the 1x lens** (`cam24fps`). The stock `camera-feature.xml` has `seamless-zoom-support="false"` on `BACK_CAMCORDER_RESOLUTION_FEATURE_MAP_3840X2160_24FPS` and `..._1920X1080_24FPS`, so once those entries were opened to standard Video, UHD and FHD 24 offered no 0.6x / 3x / 10x switch. The apply now sets `seamless-zoom-support="true"` on those two entries; the 8K 24 fps entry keeps `false`, so the 10x stays hidden there.
 
 ## v1.7.2

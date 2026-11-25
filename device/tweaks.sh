@@ -22,7 +22,7 @@
 #         camerahdr hdr2023 audioeraser colortone galaxyai camextras autoframe settingssearch bargein
 #         callscreen tenbit hideksu cam24fps weather wideflash
 #         prowbtint zoomrocker videosoftening afcontrol aelimit slowmoaf extstorage
-#         anamorphic profps slowmo4k120 dual5g  (see README.md; the categories they're grouped in are in install.sh and the WebUI)
+#         anamorphic profps slowmo4k120 dofadapter mirror8k longrec dual5g  (see README.md; the categories they're grouped in are in install.sh and the WebUI)
 #
 # Nothing here writes to a partition. Every change is a module load, an overlay, a bind mount or a
 # runtime setting, so a reboot always returns the phone to stock. The files themselves stay on storage
@@ -47,7 +47,7 @@ mkdir -p $V; L=$V/tweaks.log; R=$V/run
 [ -f $D/module.prop ] && MODULE=1 || MODULE=0
 APPLY_LOCK=/dev/s23tweaks_apply.lock         # /dev is tmpfs: locks never survive a reboot
 STAYS_TILL_REBOOT="airdrop wifi7 battery india callrec vulkan audioeraser hdr2023 colortone tenbit galaxyai settingssearch hideksu cam24fps"
-TWEAK_IDS="airdrop battery features callrec india hotspot6g wifi7 display logvideo vulkan camerahdr hdr2023 audioeraser colortone galaxyai camextras autoframe settingssearch bargein callscreen tenbit hideksu cam24fps weather wideflash prowbtint zoomrocker videosoftening afcontrol aelimit slowmoaf extstorage anamorphic profps slowmo4k120 dual5g"
+TWEAK_IDS="airdrop battery features callrec india hotspot6g wifi7 display logvideo vulkan camerahdr hdr2023 audioeraser colortone galaxyai camextras autoframe settingssearch bargein callscreen tenbit hideksu cam24fps weather wideflash prowbtint zoomrocker videosoftening afcontrol aelimit slowmoaf extstorage anamorphic profps slowmo4k120 dofadapter mirror8k longrec dual5g"
 GMS_MIN=261125000                            # Play services 26.11, the first with Mosey support
 # Firmware the AirDrop/Wi-Fi 7 kernel modules are checked against (one line each, read by customize.sh).
 # All are One UI 9 build GZIF on GKI kernel 34343818, and their whole Wi-Fi stack (cnss2, mhi, cfg80211,
@@ -496,6 +496,10 @@ ff_apply() {
 #          stays hidden in these modes unless the Camera APK patch is bound (cam24fps/profps).
 #  slowmo4k120: 4K120 and FHD120 in Slow motion (slow_motion added to their modes), and the
 #          FHD240 entry rebuilt for the Slow motion menu so the resolution list is complete.
+#  dofadapter: Camera Assistant's DOF (depth-of-field) adapter option.
+#  mirror8k: recording in 8K while the phone is mirrored to a display (HDMI/Smart View).
+#  longrec: raises the recording time limit in overheat conditions and the delay before
+#           low-power mode from 300 s (5 min) to 3600 s (1 h).
 # Never add SUPPORT_BACK_WIDE_NORMAL_DUAL_PORTRAIT_VIDEO, SUPPORT_BACK_PORTRAIT_VIDEO_TELE_DUAL or
 # CAMERA_SUPPORT_SEAMLESS_PORTRAITVIDEO: on the S23 they crash the camera ("Zoom is not supported").
 CF_LOG='<local name="SUPPORT_LOG_VIDEO" value="true"/>'
@@ -507,6 +511,10 @@ CF_ZOOMROCKER='<local name="SUPPORT_VIDEO_MODE_ZOOM_ROCKER" value="true"/>'
 CF_SLOWMOAF='<local name="SUPPORT_SLOW_MOTION_AF_DURING_RECORDING" value="true"/>'
 CF_ANAMORPHIC='<local name="SUPPORT_CAMERA_ASSISTANT_ANAMORPHIC_LENS" value="true"/>'
 CF_ANAMORPHIC_SCALER='<local name="SUPPORT_CAMERA_ASSISTANT_ANAMORPHIC_LENS_HW_SCALER" value="true"/>'
+CF_DOFADAPTER='<local name="SUPPORT_CAMERA_ASSISTANT_DOF_ADAPTER" value="true"/>'
+CF_MIRROR8K='<local name="SUPPORT_CAMERA_ASSISTANT_RECORDING_8K_WHEN_MIRRORING" value="true"/>'
+CF_LONGREC='<local name="MAX_SEAMLESS_ZOOM_RECORDING_TIME_LIMIT_IN_OVERHEAT_CONDITION" value="3600"/>
+<local name="MIN_RECORDING_TIME_TO_ENABLE_LOW_POWER_MODE" value="3600"/>'
 CF_SM_240FPS='<local name="BACK_CAMCORDER_RESOLUTION_FEATURE_MAP_1920X1080_240FPS" value="true" hdr="true" hdr10="false" snapshot-support="false" snapshot-size="4000x2252" vdis="false" super-vdis="false" effect="false" object-tracking="false" seamless-zoom-support="false" physical-zoom-supported="false" external-storage-support="true" supported-mode="slow_motion"/>'
 CF_PROFPS='<local name="BACK_CAMCORDER_RESOLUTION_FEATURE_MAP_3840X2160_25FPS" value="true" hdr="true" hdr10="true" snapshot-support="true" snapshot-size="4000x2252" vdis="true" super-vdis="false" effect="false" object-tracking="true" seamless-zoom-support="true" physical-zoom-supported="false" external-storage-support="true" touch-af="true" supported-mode="pro_video"/>
 <local name="BACK_CAMCORDER_RESOLUTION_FEATURE_MAP_3840X2160_48FPS" value="true" hdr="true" hdr10="true" snapshot-support="true" snapshot-size="4000x2252" vdis="true" super-vdis="false" effect="false" object-tracking="true" seamless-zoom-support="false" physical-zoom-supported="true" external-storage-support="true" touch-af="true" supported-mode="pro_video"/>
@@ -1786,7 +1794,7 @@ why_not() {
         { echo "this phone's /system/framework/services.jar (md5 $m) isn't one a patch was made from ($(echo "$HIDEKSU_JARS" | cut -d' ' -f3- | tr '\n' ',' | sed 's/,$//; s/,/, /g')); tools/hideksupatch.sh can make one"; return; }
       pm path me.weishu.kernelsu >/dev/null 2>&1 || echo "the KernelSU manager (me.weishu.kernelsu) isn't installed, so there's nothing to hide" ;;
     hdr2023) for f in $H23_LIBS; do [ -f /system/lib64/$f ] || { echo "this phone has no /system/lib64/$f to replace"; return; }; done ;;
-    logvideo|camextras|wideflash|prowbtint|zoomrocker|slowmoaf|extstorage|anamorphic|profps) grep -q '</resources>' $CF 2>/dev/null || echo "this firmware's $CF can't be edited" ;;
+    logvideo|camextras|wideflash|prowbtint|zoomrocker|slowmoaf|extstorage|anamorphic|profps|dofadapter|mirror8k|longrec) grep -q '</resources>' $CF 2>/dev/null || echo "this firmware's $CF can't be edited" ;;
     slowmo4k120)
       grep -q '</resources>' $CF 2>/dev/null || { echo "this firmware's $CF can't be edited"; return; }
       grep -q 'BACK_CAMCORDER_RESOLUTION_FEATURE_MAP_3840X2160_120FPS' $CF 2>/dev/null || echo "this firmware has no 4K120 entry to enable in Slow motion" ;;
@@ -1833,6 +1841,10 @@ is_on() {
     anamorphic) bound $CF && grep -q 'name="SUPPORT_CAMERA_ASSISTANT_ANAMORPHIC_LENS" value="true"' $CF 2>/dev/null ;;
     profps) bound $CF && grep -q 'name="BACK_CAMCORDER_RESOLUTION_FEATURE_MAP_3840X2160_25FPS" value="true"' $CF 2>/dev/null ;;
     slowmo4k120) bound $CF && grep -q 'name="BACK_CAMCORDER_RESOLUTION_FEATURE_MAP_3840X2160_120FPS".*slow_motion' $CF 2>/dev/null ;;
+    dofadapter) bound $CF && grep -q 'name="SUPPORT_CAMERA_ASSISTANT_DOF_ADAPTER" value="true"' $CF 2>/dev/null ;;
+    mirror8k) bound $CF && grep -q 'name="SUPPORT_CAMERA_ASSISTANT_RECORDING_8K_WHEN_MIRRORING" value="true"' $CF 2>/dev/null ;;
+    longrec) bound $CF && grep -q 'name="MAX_SEAMLESS_ZOOM_RECORDING_TIME_LIMIT_IN_OVERHEAT_CONDITION" value="3600"' $CF 2>/dev/null &&
+      grep -q 'name="MIN_RECORDING_TIME_TO_ENABLE_LOW_POWER_MODE" value="3600"' $CF 2>/dev/null ;;
     autoframe) grep -q "<SEC_FLOATING_FEATURE_CAMERA_CONFIG_AUTOFRAMING>uhd<" $FF 2>/dev/null ;;
     bargein) grep -q "<SEC_FLOATING_FEATURE_BIXBY_CONFIG_BARGEIN_PARAM_MODE>2<" $FF 2>/dev/null ;;
     weather) grep -q "<SEC_FLOATING_FEATURE_$WX_KEY>[^<]*GENWEATHER" $FF 2>/dev/null && pm path $WX_PKG >/dev/null 2>&1 && ! wx_live_off ;;
@@ -1921,6 +1933,12 @@ $CF_ANAMORPHIC_SCALER"
   has profps && cf_add="$cf_add
 $CF_PROFPS"
   has slowmo4k120 && cf_slowmo_modes="BACK_CAMCORDER_RESOLUTION_FEATURE_MAP_3840X2160_120FPS BACK_CAMCORDER_RESOLUTION_FEATURE_MAP_1920X1080_120FPS"
+  has dofadapter && cf_add="$cf_add
+$CF_DOFADAPTER"
+  has mirror8k && cf_add="$cf_add
+$CF_MIRROR8K"
+  has longrec && cf_add="$cf_add
+$CF_LONGREC"
   has cam24fps && cf_video_modes="BACK_CAMCORDER_RESOLUTION_FEATURE_MAP_3840X2160_24FPS BACK_CAMCORDER_RESOLUTION_FEATURE_MAP_1920X1080_24FPS BACK_CAMCORDER_RESOLUTION_FEATURE_MAP_7680X4320_24FPS FRONT_CAMCORDER_RESOLUTION_FEATURE_MAP_3840X2160_24FPS FRONT_CAMCORDER_RESOLUTION_FEATURE_MAP_1920X1080_24FPS"
   camfeat_apply && restart=1
   if has cam24fps; then cam24fps_bind
@@ -2044,6 +2062,9 @@ status)
   echo "anamorphic: $(is_on anamorphic && echo on || echo off)"
   echo "profps: $(is_on profps && echo on || echo off), 10x Camera $(cam24_profps_on && echo "APK patched" || echo "XML only")"
   echo "slowmo4k120: $(is_on slowmo4k120 && echo on || echo off)"
+  echo "dofadapter: $(is_on dofadapter && echo on || echo off)"
+  echo "mirror8k: $(is_on mirror8k && echo on || echo off)"
+  echo "longrec:  $(is_on longrec && echo on || echo off)"
   echo "audioeraser: $([ -f /system/etc/fastScanner.tflite ] && echo on || echo off), engine $(same_size /system/lib64/$VE $PL/audioeraser/$VE && echo S24 || echo stock)"
   echo "colortone: Settings $(bound $SETTINGS && echo patched || echo stock), service $([ -f /system/priv-app/$EAD/$EAD.apk ] && echo on || echo off)"
   echo "galaxyai: $(for p in $GAI_APPS; do n=${p#*/}; printf '%s=%s ' $n "$(same_size /system/$p/$n.apk $PL/galaxyai/$n.apk && echo S24 || echo stock)"; done)C2PA=$(same_size $C2PA $D/files/libC2paDps-shim.so && echo shim || echo stock)"

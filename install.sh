@@ -8,7 +8,7 @@ set -euo pipefail
 # below can read the rest of the script from stdin (curl | bash).
 main() {
 REPO=dtechterminal/s23-ultra-tweaks
-VERSION=v1.7.2
+VERSION=v1.8.0
 AIRDROP_KBASE=5.15.197-android13-8-34343818-ab; AIRDROP_FW="S918WVLU8GZIF S918BXXUAGZIF S918U1UEU8GZIF S918USQU8GZIF S918NKSU8GZIF"   # as in device/tweaks.sh
 PHONE_DIR=/data/adb/s23tweaks          # state (and the code, when the module isn't installed)
 MODULE_DIR=/data/adb/modules/s23_ultra_tweaks
@@ -85,12 +85,12 @@ lc_have=$(sh_ "dumpsys package com.samsung.android.offline.languagemodel 2>/dev/
 
 # Tweaks, grouped in categories. A category letter picks every available tweak in it.
 ids=(airdrop wifi7 hotspot6g
-     logvideo camextras camerahdr hdr2023 autoframe tenbit cam24fps wideflash prowbtint zoomrocker videosoftening afcontrol aelimit slowmoaf extstorage anamorphic profps slowmo4k120
+     logvideo camextras camerahdr hdr2023 autoframe tenbit cam24fps wideflash prowbtint zoomrocker videosoftening afcontrol aelimit slowmoaf extstorage anamorphic profps slowmo4k120 dofadapter mirror8k longrec
      display colortone vulkan weather
      galaxyai audioeraser settingssearch callscreen bargein
      battery features hideksu
      callrec india dual5g)
-cat=(A A A B B B B B B B B B B B B B B B B B B C C C C D D D D D E E E F F F)
+cat=(A A A B B B B B B B B B B B B B B B B B B B B B C C C C D D D D D E E E F F F)
 cats=(A B C D E F)
 catname=("Connectivity" "Camera" "Display and graphics" "Galaxy AI and Samsung apps" "Battery and settings" "Carrier")
 desc=("AirDrop: Quick Share > Share with Apple devices (S24 Wi-Fi driver + Google's Mosey; 20 MB download)"
@@ -114,6 +114,9 @@ desc=("AirDrop: Quick Share > Share with Apple devices (S24 Wi-Fi driver + Googl
       "Anamorphic desqueeze: Camera Assistant's 1.33x / 1.55x / 2.0x anamorphic lens desqueeze"
       "Extra Pro video frame rates: 4K 25/48/50/100/120 (120 on Wide and Ultrawide), FHD 25/48/50/100, 8K 25, 21:9 Cinema 25/48/50/100/120, and the 10x super tele at 25/48/50 with the patched Camera APK"
       "4K120 in Slow motion: adds 4K120 and FHD120 to Slow motion and rebuilds the FHD240 menu entry"
+      "DOF adapter in Camera Assistant: the DOF (depth-of-field) adapter option for manual-focus adapters"
+      "8K while mirroring: records in 8K while the phone is mirrored to a display over HDMI or Smart View"
+      "Longer recording limits: the overheat recording cap and the low-power-mode delay go from 5 minutes to 1 hour"
       "Always On Display: lock screen wallpaper, and AOD brightness that follows the room light"
       "Adaptive color tone: Settings > Display, the screen's colour follows the room light (1 MB download)"
       "Vulkan rendering: apps draw with Vulkan instead of OpenGL"
@@ -129,8 +132,8 @@ desc=("AirDrop: Quick Share > Share with Apple devices (S24 Wi-Fi driver + Googl
       "Call recording in the Samsung Phone app"
       "India carrier config for Airtel/Jio SIMs: 'Use 5G standalone networks' switch, call recording, Smart IVR, message cards, plus Samsung Wallet India (UPI, DigiLocker, transit) and the 6 GHz hotspot by reporting the phone as the Indian model; reverts on reboot, the sales code on disk is untouched"
       "Dual SIM 5G: 5G standalone on both SIMs at once instead of only the data SIM (adds your SIMs' country to the modem's 5G+5G list; stays until un-picked; the original is backed up first)")
-avail=($can_airdrop $can_airdrop 1 1 1 1 1 1 1 $can_c24 1 1 1 1 1 1 1 1 1 1 1 1 $can_ct 1 1 1 1 1 $can_lc 1 1 1 $can_ksu $can_rec $can_csc 1)
-why=("$why_airdrop" "$why_airdrop" "" "" "" "" "" "" "" "$why_c24" "" "" "" "" "" "" "" "" "" "" "" "" "$why_ct" "" "" "" "" "" "$why_lc" "" "" "" "$why_ksu" "$why_rec" "$why_csc" "")
+avail=($can_airdrop $can_airdrop 1 1 1 1 1 1 1 $can_c24 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 $can_ct 1 1 1 1 1 $can_lc 1 1 1 $can_ksu $can_rec $can_csc 1)
+why=("$why_airdrop" "$why_airdrop" "" "" "" "" "" "" "" "$why_c24" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "$why_ct" "" "" "" "" "" "$why_lc" "" "" "" "$why_ksu" "$why_rec" "$why_csc" "")
 
 # pre-release builds lived in /data/local/tmp/s23tweaks: carry the picks and the Play services backup over
 sh_ "su -c '[ -d /data/local/tmp/s23tweaks ] && [ ! -e $PHONE_DIR/choices ] && mkdir -p $PHONE_DIR && cp -r /data/local/tmp/s23tweaks/choices /data/local/tmp/s23tweaks/backup $PHONE_DIR/ 2>/dev/null; true'" >/dev/null
@@ -264,6 +267,9 @@ case " $picked " in *" extstorage "*) info "USB-C storage: plug an exFAT USB-C S
 case " $picked " in *" anamorphic "*) info "Anamorphic desqueeze: Camera > Settings > Camera Assistant > anamorphic lens desqueeze (1.33x / 1.55x / 2.0x)." ;; esac
 case " $picked " in *" profps "*) info "Pro video frame rates: Camera > More > Pro video; 4K 25/48/50/100/120 (120 on Wide and Ultrawide), FHD 25/48/50/100, 8K 25, 21:9 Cinema 25/48/50/100/120. The 10x works on S918BXXUAGZIF with the patched Camera APK; on other firmwares it stays hidden." ;; esac
 case " $picked " in *" slowmo4k120 "*) info "4K120 in Slow motion: Camera > Slow motion > 4K120; turn on Log video for the Log profile." ;; esac
+case " $picked " in *" dofadapter "*) info "DOF adapter: Camera > Settings > Camera Assistant > DOF adapter." ;; esac
+case " $picked " in *" mirror8k "*) info "8K while mirroring: Camera > Settings > Camera Assistant > 8K recording while mirroring." ;; esac
+case " $picked " in *" longrec "*) info "Long recording: the overheat recording limit and the low-power-mode delay are now 1 hour instead of 5 minutes." ;; esac
 case " $picked " in *" settingssearch "*) info "Settings search: open Settings and tap the search bar." ;; esac
 case " $picked " in *" callscreen "*) info "Call screening: Phone > Settings > Call screening. The AI summary shows an error on the S23; screening and voice messages work." ;; esac
 case " $picked " in *" autoframe "*) info "4K auto framing was reported to make the camera fail (S918B); turn it off if the camera fails to open." ;; esac

@@ -1,7 +1,7 @@
 id=s23_ultra_tweaks
 name=S23 Ultra Tweaks
-version=v1.7.2
-versionCode=172
+version=v1.8.0
+versionCode=180
 author=dtechterminal
 description=S24 features on a rooted Galaxy S23 Ultra in six categories (connectivity, camera, display, Galaxy AI, battery, carrier); open the module page to choose.
 updateJson=https://raw.githubusercontent.com/dtechterminal/s23-ultra-tweaks/main/module/update.json

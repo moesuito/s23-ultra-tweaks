@@ -379,6 +379,9 @@ const TWEAKS = [
   { id: "anamorphic", cat: "camera", name: "Anamorphic desqueeze", desc: "Camera Assistant's anamorphic lens desqueeze (1.33× / 1.55× / 2.0×) for anamorphic lenses" },
   { id: "profps", cat: "camera", name: "Extra Pro video frame rates", desc: "4K 25/48/50/100/120 (120 on the Wide and Ultrawide), FHD 25/48/50/100 and 8K 25 in Pro video, plus 21:9 Cinema 25/48/50/100/120; on a patched Samsung Camera (S918BXXUAGZIF) it also unhides the 10× super tele at 25/48/50 fps" },
   { id: "slowmo4k120", cat: "camera", name: "4K120 in Slow motion", desc: "Adds 4K120 and FHD120 to Slow motion, and rebuilds the FHD240 entry so the Slow motion resolution list is complete (Log works with the Log video tweak on)" },
+  { id: "dofadapter", cat: "camera", name: "DOF adapter in Camera Assistant", desc: "Camera Assistant's DOF (depth-of-field) adapter option, for manual-focus adapters" },
+  { id: "mirror8k", cat: "camera", name: "8K while mirroring", desc: "Records in 8K while the phone is mirrored to a display over HDMI or Smart View" },
+  { id: "longrec", cat: "camera", name: "Longer recording limits", desc: "Raises the overheat recording limit and the delay before low-power mode from 5 minutes to 1 hour" },
   { id: "display", cat: "display", name: "Full-screen AOD", desc: "The lock screen wallpaper on Always On Display, and AOD brightness that follows the room light" },
   { id: "colortone", cat: "display", name: "Adaptive color tone", desc: "Display colour follows the room light, as on the S24 (1 MB download)" },
   { id: "vulkan", cat: "display", name: "Vulkan rendering", desc: "Apps draw with Vulkan instead of OpenGL, as on the S24. Can make some lock screen animations (stretchable clocks) stutter more; unpick it if so." },
@@ -399,8 +402,8 @@ const TWEAKS = [
 // independent in tweaks.sh and in the saved picks; the page only groups them.
 const BUNDLES = [
   { id: "cameratweaks", cat: "camera", name: "Camera Tweaks",
-    ids: ["cam24fps", "wideflash", "prowbtint", "zoomrocker", "videosoftening", "afcontrol", "aelimit", "slowmoaf", "extstorage", "anamorphic", "profps", "slowmo4k120"],
-    desc: "Everything we added to the camera, in one switch: 24 FPS in Video (rear and front), flash and torch on the 0.6× ultrawide, white-balance tint, Video zoom rocker, 4K120 in Slow motion, Camera Assistant's video softening, AF speed/sensitivity, auto exposure limit and anamorphic desqueeze, touch focus in Slow motion, USB-C recording and the extra Pro video rates (4K 120, 21:9 Cinema, up to 8K 25, and the 10× at 25/48/50 on the patched Camera)." },
+    ids: ["cam24fps", "wideflash", "prowbtint", "zoomrocker", "videosoftening", "afcontrol", "aelimit", "slowmoaf", "extstorage", "anamorphic", "profps", "slowmo4k120", "dofadapter", "mirror8k", "longrec"],
+    desc: "Everything we added to the camera, in one switch: 24 FPS in Video (rear and front), flash and torch on the 0.6× ultrawide, white-balance tint, Video zoom rocker, 4K120 in Slow motion, Camera Assistant's video softening, AF speed/sensitivity, auto exposure limit, anamorphic desqueeze and DOF adapter, touch focus in Slow motion, USB-C recording, the extra Pro video rates (4K 120, 21:9 Cinema, up to 8K 25, and the 10× at 25/48/50 on the patched Camera), 8K while mirroring and 1-hour recording limits." },
 ];
 const BUNDLE_OF = {};
 for (const b of BUNDLES) for (const id of b.ids) BUNDLE_OF[id] = b;
@@ -428,7 +431,7 @@ const WHERE = {
   tenbit: ["Front-camera 10-bit", "Nothing to set. Apps that offer 10-bit or HDR video (HLG) now offer it on the selfie camera too; Samsung Camera already had its own."],
   cam24fps: ["24 FPS in standard Video", "Camera → Video → tap resolution/FPS at the top → select FHD, UHD or 8K and 24."],
   wideflash: ["Flash on ultrawide", "Camera → Photo: flash on; Video: torch on. Camera Assistant now shows the ultrawide flash option."],
-  cameratweaks: ["Camera Tweaks", "24 fps: Camera → Video → resolution/FPS. Ultrawide flash: Photo flash / Video torch. Tint: Pro or Pro video → white balance. Zoom rocker: Video zoom. 4K120: Slow motion → 4K120 (Log needs the Log video tweak). Camera Assistant: video softening, AF speed/sensitivity, auto exposure limit and anamorphic desqueeze. Touch focus: Slow motion. USB-C: Camera → Settings → Storage. Pro rates: Camera → More → Pro video."],
+  cameratweaks: ["Camera Tweaks", "24 fps: Camera → Video → resolution/FPS. Ultrawide flash: Photo flash / Video torch. Tint: Pro or Pro video → white balance. Zoom rocker: Video zoom. 4K120: Slow motion → 4K120 (Log needs the Log video tweak). Camera Assistant: video softening, AF speed/sensitivity, auto exposure limit, anamorphic desqueeze and DOF adapter. Touch focus: Slow motion. USB-C: Camera → Settings → Storage. Pro rates: Camera → More → Pro video. 8K mirroring and the longer recording limits are on with nothing to set."],
   videosoftening: ["Video softening", "Camera → Settings → Camera Assistant → Video softening (Off / Medium / High)."],
   afcontrol: ["Autofocus controls", "Camera → Settings → Camera Assistant → AF speed and AF sensitivity."],
   aelimit: ["Auto exposure limit", "Camera → Settings → Camera Assistant → Auto exposure limit."],
@@ -436,6 +439,9 @@ const WHERE = {
   extstorage: ["USB-C recording", "Plug an exFAT USB-C SSD or drive, then Camera → Settings → Storage → USB storage; recording works in every video mode."],
   anamorphic: ["Anamorphic desqueeze", "Camera → Settings → Camera Assistant → Anamorphic lens desqueeze."],
   profps: ["Pro video frame rates", "Camera → More → Pro video → resolution/FPS: 4K 25/48/50/100/120 (120 on the Wide and Ultrawide), FHD 25/48/50/100, 8K 25, and 21:9 Cinema 25/48/50/100/120. The 10× tele appears at 25/48/50 on S918BXXUAGZIF with the patched Camera APK; on other firmwares it stays hidden."],
+  dofadapter: ["DOF adapter", "Camera → Settings → Camera Assistant → DOF adapter."],
+  mirror8k: ["8K while mirroring", "Camera → Settings → Camera Assistant → 8K recording while mirroring."],
+  longrec: ["Long recording", "Nothing to set. The overheat recording limit and the low-power-mode delay are now 1 hour instead of 5 minutes."],
   autoframe: ["4K auto framing", "Reported to make the camera fail (S918B). Video at UHD with Auto framing on; turn it off if the camera fails to open."],
   settingssearch: ["Settings search", "Open Settings and tap the search bar."],
   callscreen: ["Call screening", "Phone → Settings → Call screening. On the S23 the AI summary shows an error; screening and voice messages work."],
@@ -1140,9 +1146,12 @@ function installMock() {
     if (has("anamorphic")) add(0.3, "anamorphic: Camera Assistant > anamorphic lens desqueeze on");
     if (has("profps")) add(0.3, "profps: extra Pro video frame rates on (4K 25/48/50, FHD 25/48/50/100, 8K 25)");
     if (has("slowmo4k120")) add(0.3, "slowmo4k120: 4K120 and FHD120 in Slow motion on, FHD240 menu entry rebuilt");
+    if (has("dofadapter")) add(0.2, "dofadapter: Camera Assistant > DOF adapter on");
+    if (has("mirror8k")) add(0.2, "mirror8k: 8K recording while mirroring on");
+    if (has("longrec")) add(0.2, "longrec: overheat and low-power recording limits raised to 1 hour");
     if (has("vulkan")) add(0.3, "vulkan: apps render with Skia on Vulkan");
     if (has("weather")) add(0.3, "feature flags on: LOCKSCREEN_CONFIG_WALLPAPER_STYLE");
-    if (["airdrop", "battery", "features", "callrec", "india", "display", "logvideo", "vulkan", "camerahdr", "hdr2023", "audioeraser", "colortone", "galaxyai", "weather", "wideflash", "prowbtint", "zoomrocker", "videosoftening", "afcontrol", "aelimit", "slowmoaf", "extstorage", "anamorphic", "profps", "slowmo4k120"].some(has)) { add(0.4, "restarting the Android framework (screen goes black for ~30 s)"); add(3.0, "framework back"); }
+    if (["airdrop", "battery", "features", "callrec", "india", "display", "logvideo", "vulkan", "camerahdr", "hdr2023", "audioeraser", "colortone", "galaxyai", "weather", "wideflash", "prowbtint", "zoomrocker", "videosoftening", "afcontrol", "aelimit", "slowmoaf", "extstorage", "anamorphic", "profps", "slowmo4k120", "dofadapter", "mirror8k", "longrec"].some(has)) { add(0.4, "restarting the Android framework (screen goes black for ~30 s)"); add(3.0, "framework back"); }
     if (has("hotspot6g")) add(0.5, "hotspot6g: Mobile hotspot > Band now offers 6 GHz (needs WPA3); country unchanged, Samsung Wallet unaffected");
     if (has("weather")) add(0.6, "weather: on; pick it in the lock screen editor (Wallpaper and style > Lock screen > Weather)");
     if (has("airdrop")) { add(0.4, "airdrop: mosey_server running"); add(0.4, "airdrop: Play services Nearby flags on (2 of 2 overrides present)"); }
